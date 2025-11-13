@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta7 charset="utf-8">
+  <title>Randevu Takvimi</title>
+
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet'>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<!-- FullCalendar JS ve CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'tr',
+    events: '/events/',   // Django'daki events_api'den JSON çeker
+    eventClick: function(info) {
+      const modalBg = document.getElementById('modal-bg');
+      modalBg.style.display = 'flex';
+      modalBg.querySelector('#modal-box').innerHTML = `
+        <h3>${info.event.title}</h3>
+        <p><b>Başlangıç:</b> ${info.event.start}</p>
+        <p><b>Bitiş:</b> ${info.event.end}</p>
+        <span id="closeBtn" onclick="document.getElementById('modal-bg').style.display='none'">✖</span>
+      `;
+    }
+  });
+  calendar.render();
+});
+</script>
+
+  <style>
+    body { font-family: sans-serif; padding: 10px; }
+    .fc-toolbar-title { font-size: 22px; }
+    #modal-bg {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,.45); padding:30px;
+      align-items:center; justify-content:center;
+    }
+    #modal-box {
+      background:#fff; border-radius:10px; padding:15px;
+      max-width:350px; width:100%;
+    }
+    #closeBtn { float:right; font-size:18px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<h2>Randevu Takvimi</h2>
+<p><a href="{% url 'create_appointment' %}">➕ Yeni Randevu Oluştur</a></p>
+<h2>Takvim Sayfası</h2>
+<p>Burada takvim veya randevular görüntülenecek.</p>
+
+<div id='calendar'></div>
+
+<!-- Modal -->
+<div id="modal-bg">
+  <div id="modal-box">
+    <span id="closeBtn">✖</span>
+    <h3 id="m-title"></h3>
+    <p id="m-time"></p>
+    <p id="m-notes" style="white-space:pre-wrap;"></p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'tr',
+    events: '/events/',  // <-- Bunu kullanıyoruz
+    eventClick: function(info) {
+      document.getElementById('m-title').textContent = info.event.title;
+      document.getElementById('m-time').textContent = 
+        info.event.start.toLocaleString() + " - " + info.event.end.toLocaleString();
+      document.getElementById('m-notes').textContent = info.event.extendedProps.notes || "";
+      document.getElementById('modal-bg').style.display = 'flex';
+    }
+  });
+
+  calendar.render();
+
+  document.getElementById('closeBtn').onclick = function(){
+    document.getElementById('modal-bg').style.display = 'none';
+  };
+  document.getElementById('modal-bg').onclick = function(e){
+    if(e.target.id === 'modal-bg'){
+      document.getElementById('modal-bg').style.display = 'none';
+    }
+  };
+});
+</script>
+
+</body>
+</html>

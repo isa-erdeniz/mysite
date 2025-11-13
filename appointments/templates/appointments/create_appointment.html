@@ -1,0 +1,30 @@
+<h2>Randevu Oluştur</h2>
+<form method="POST">
+  {% csrf_token %}
+
+  Müşteri:
+  <select name="client">
+    {% for c in clients %}
+    <option value="{{ c.id }}">{{ c.name }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  Personel:
+  <select name="staff">
+    {% for s in staff %}
+    <option value="{{ s.id }}">{{ s.name }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  Hizmet:
+  <select name="service">
+    {% for s in services %}
+    <option value="{{ s.id }}">{{ s.name }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  Tarih: <input type="date" name="date"><br><br>
+  Saat: <input type="time" name="time"><br><br>
+
+  <button type="submit">Kaydet</button>
+</form>
